@@ -6,7 +6,7 @@ import Vacante from "../models/Vacantes.js";
 
 dotenv.config({path: '.env'});
 
-mongoose.connect(process.env.DATABASE, {useUnifiedTopology:true})
+mongoose.connect(process.env.DATABASE)
 const db = mongoose.connection.on('error', (error)=>{
     console.log(error);
 })

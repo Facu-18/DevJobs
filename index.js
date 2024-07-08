@@ -8,8 +8,9 @@ import exphbs from 'express-handlebars'
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
+import bodyParser from 'body-parser'
 import MongoStore from 'connect-mongo'; 
-
+import {seleccionarSkills} from './helpers/handlebars.js'
 
 dotenv.config({path: '.env'});
 
@@ -19,9 +20,22 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// Habilitar body-parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended:true}))
+
 // Habilitar handlebars
-app.engine('handlebars',
-    exphbs.engine({defaultLayout:'layout'}));
+app.engine(
+    'handlebars',
+    exphbs.engine({
+      defaultLayout: 'layout',
+      helpers: { seleccionarSkills },
+      runtimeOptions: {
+        allowProtoPropertiesByDefault: true,
+        allowProtoMethodsByDefault: true,
+      },
+    })
+  );
 
 app.set('view engine', 'handlebars');
 
