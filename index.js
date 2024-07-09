@@ -9,8 +9,12 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import bodyParser from 'body-parser'
-import MongoStore from 'connect-mongo'; 
+import MongoStore from 'connect-mongo';
+import csrf from 'csurf'; 
 import {seleccionarSkills} from './helpers/handlebars.js'
+import flash from 'connect-flash'
+import { body, validationResult } from 'express-validator';
+import passport from './config/passport.js';
 
 dotenv.config({path: '.env'});
 
@@ -48,13 +52,36 @@ app.use(session({
     secret: process.env.SECRETO,
     key: process.env.KEY,
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
     store: MongoStore.create({ 
         mongooseConnection : mongoose.connection,
         mongoUrl: process.env.DATABASE,
         collectionName: 'session', }),
         
 }));
+
+// Inicializar passport
+app.use(passport.initialize())
+app.use(passport.session())
+
+// Alertas y mensajes
+app.use(flash());
+
+// Middleware de express-validator
+
+// middleware
+app.use((req, res, next)=>{
+  res.locals.mensajes = req.flash();
+  next();
+});
+
+// Habilitar csrf
+app.use( csrf({cookie: true}) )
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 app.use('/', appRoutes);
 

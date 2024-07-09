@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 
 // Importando modelos
 import Vacante from "../models/Vacantes.js";
+import Usuario from "../models/Usuario.js";
 
 dotenv.config({path: '.env'});
 
