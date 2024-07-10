@@ -2,11 +2,6 @@
     <form action="/vacantes/editar/{{vacante.url}}" method="POST" class="default-form">
        <input type="hidden" name="_csrf" value="{{csrfToken}}">
        <h3>Información General</h3>
-
-       <div class="campo">
-         <label>Titulo</label>
-         <input type="text" name="titulo" placeholder="Ej: React Developer" value="{{vacante.titulo}}" required>
-       </div>
       {{#if errores}}
       <ul style="padding: 0; list-style-type: none;">
         {{#each errores}}
@@ -16,8 +11,11 @@
         {{/each}}
       </ul>
       {{/if}}
-
        <div class="campo">
+         <label>Titulo</label>
+         <input type="text" name="titulo" placeholder="Ej: React Developer" value="{{vacante.titulo}}" required>
+       </div>
+        <div class="campo">
          <label>Empresa</label>
          <input type="text" name="empresa" placeholder="Ej: Empresa Contrata" value="{{vacante.empresa}}" required>
        </div>

@@ -13,6 +13,9 @@ const formularioNuevaVacante = (req,res) => {
 const agregarVacante = async (req,res)=>{
    const vacante = new Vacante(req.body)
 
+   // usuario autor de la vacante
+   vacante.autor = req.user._id;
+
    //validando
    await check('titulo').notEmpty().withMessage('El campo titulo es obligatorio').run(req);
    await check('empresa').notEmpty().withMessage('El campo empresa es obligatorio').run(req);

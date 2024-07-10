@@ -40,14 +40,12 @@ const validarRegistro = async (req, res, next) => {
      
     const errores = validationResult(req);
 
-    if (errores) {
-        // si hay errores
+    if (!errores.isEmpty()) {
+        // Si hay errores
         const erroresArray = errores.array();
 
-        console.log(erroresArray);
         req.flash('error', erroresArray.map(error => error.msg));
-
-        req.flash('error', erroresArray.map(error => error.msg)); // Flash con array de errores validados
+        
         return res.render('crear-cuenta', {
             nombrePagina: 'Crea tu cuenta en DevJobs',
             tagLine: 'Comienza a publicar tus vacantes gratis, solo debes crear una cuenta',
@@ -60,23 +58,23 @@ const validarRegistro = async (req, res, next) => {
 };
 
 const crearUsuario = async (req, res) => {
-    //Crear usuario
+    // Crear usuario
     const usuario = new Usuario(req.body);
- 
-    try{
+
+    try {
         await usuario.save();
         res.redirect('/iniciar-sesion');
-    }catch(error){
-        req.flash('error', error => erroresArray.map(error => error.msg));
+    } catch (error) {
+        // Manejar error y pasar mensaje al flash
+        req.flash('error', error.message);
         return res.render('crear-cuenta', {
-            nombrePagina: 'Error: Ese correo ya esta registrado',
+            nombrePagina: 'Crea tu cuenta en DevJobs',
             tagLine: 'Comienza a publicar tus vacantes gratis, solo debes crear una cuenta',
             csrfToken: req.csrfToken(),
-            mensajes: req.flash(error),
+            mensajes: req.flash(),
         });
     }
-}
-
+};
 const formIniciarSesion = (req,res)=>{
     res.render('iniciar-sesion',{
         nombrePagina: 'Iniciar Sesión devJobs',

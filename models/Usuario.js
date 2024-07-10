@@ -36,14 +36,14 @@ usuariosSchema.pre('save', async function(next){
     next();
 });
 // Alerta de usuario registrado
-usuariosSchema.post('save', function(error, doc, next){
-   if(error.name === 'MongoServerError' && error.code === 11000){
-      next(new Error('Ese correo ya esta registrado'))
+usuariosSchema.post('save', function(error, doc, next) {
+   if (error.name === 'MongoServerError' && error.code === 11000) {
+       next(new Error('Ese correo ya está registrado'));
+   } else {
+       next(error);
    }
-   else{
-      next(error);
-   }
-})
+});
+
 
 // Autenticar usuarios
 usuariosSchema.methods = {

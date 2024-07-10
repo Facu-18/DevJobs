@@ -67,8 +67,6 @@ app.use(passport.session())
 // Alertas y mensajes
 app.use(flash());
 
-// Middleware de express-validator
-
 // middleware
 app.use((req, res, next)=>{
   res.locals.mensajes = req.flash();

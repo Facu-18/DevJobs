@@ -40,16 +40,17 @@
     {{/if}}
     </header>
 
-    <div class="contenido-principal contenedor">
-        {{#if mensajes}}
-            <div class="alertas">
-                {{#mostrarAlerta mensajes alertas}}
+<div class="contenido-principal contenedor">
+    {{#if mensajes.error}}
+        <div class="alerta">
+            {{#each mensajes.error}}
+                <div class="alerta">{{this}}</div>
+            {{/each}}
+        </div>
+    {{/if}}    
+    {{{body}}}
+</div>
 
-                {{/mostrarAlerta}}
-            </div>
-        {{/if}}    
-        {{{body}}}
-    </div>
 
 
     <script src="/js/trix.js"></script>
