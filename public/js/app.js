@@ -1,3 +1,7 @@
+import axios from "axios";
+import { header } from "express-validator";
+import Swal from "sweetalert2";
+
 document.addEventListener('DOMContentLoaded', ()=>{
     const skills = document.querySelector('.lista-conocimientos');
 
@@ -13,6 +17,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
         // llamar funcion en editar
         skillsSeleccionados();
+    }
+
+    const vacantesListado = document.querySelector('.panel-administracion')
+     
+    if(vacantesListado){
+      vacantesListado.addEventListener('click',accionesListado)
     }
 })
 
@@ -59,3 +69,56 @@ const limpiarAlertas = () =>{
    }
   }, 4000)
 }
+
+//eliminar vacante
+const accionesListado = (e) => {
+  if (e.target.dataset.eliminar) {
+    // Preguntar al usuario antes de eliminar
+    Swal.fire({
+      title: "¿Quieres eliminar la vacante?",
+      text: "Una vez eliminada, no se puede recuperar",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, Eliminar",
+      cancelButtonText: 'No, Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Obtener el token CSRF del DOM
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+         
+        const url = `${location.origin}/vacantes/eliminar/${e.target.dataset.eliminar}`;
+
+        // Axios para eliminar el registro, incluyendo el token CSRF en la cabecera
+        axios.delete(url, {
+          headers: {
+            'X-CSRF-Token': csrfToken
+          },
+          params: { url }
+        }).then(function(respuesta){
+          if(respuesta.status === 200){
+            Swal.fire({
+              title: "Eliminado",
+               text: respuesta.data,
+               icon: "success"
+            });
+          
+             // Eliminar del dom
+             e.target.parentElement.parentElement.parentElement.removeChild(e.target.parentElement.parentElement)
+          }
+          
+        }).catch(function(error){
+          Swal.fire({
+            type: 'error',
+            title: 'Hubo un error',
+            text: 'No se pudo eliminar'
+          })
+          
+        });
+      }
+    });
+  } else if(e.target.tagName === 'A') {
+    window.location.href = e.target.href;
+  }
+};

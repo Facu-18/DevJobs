@@ -1,8 +1,8 @@
 import express from 'express';
 import {mostrarTrabajos} from '../controllers/homeController.js'
-import { formularioNuevaVacante, agregarVacante, mostrarVacante, formEditarVacante, editarVacante,} from '../controllers/vacateController.js';
-import {formCrearCuenta, crearUsuario, validarRegistro, formIniciarSesion } from '../controllers/usuarioController.js'
-import { autenticarUsuario, mostrarPanel, verificarUsuario } from '../controllers/authController.js';
+import { formularioNuevaVacante, agregarVacante, mostrarVacante, formEditarVacante, editarVacante, eliminarVacante, subirCV, contactar, mostrarCandidatos} from '../controllers/vacateController.js';
+import {formCrearCuenta, crearUsuario, validarRegistro, formIniciarSesion, formEditarPerfil, editarPerfil, cerrarSesion, validarPerfil, subirImagen } from '../controllers/usuarioController.js'
+import { autenticarUsuario, mostrarPanel, verificarUsuario,formReestablecerPassword,enviarToken } from '../controllers/authController.js'
 
 const router = express.Router();
 
@@ -19,6 +19,9 @@ router.get('/vacantes/:url', mostrarVacante)
 router.get('/vacantes/editar/:url', verificarUsuario, formEditarVacante)
 router.post('/vacantes/editar/:url', verificarUsuario, editarVacante)
 
+// Eliminar Vacantes
+router.delete('/vacantes/eliminar/:id', eliminarVacante)
+
 // Crear Cuentas
 router.get('/crear-cuenta', formCrearCuenta)
 router.post('/crear-cuenta', validarRegistro, crearUsuario)
@@ -27,7 +30,26 @@ router.post('/crear-cuenta', validarRegistro, crearUsuario)
 router.get('/iniciar-sesion', formIniciarSesion)
 router.post('/iniciar-sesion', autenticarUsuario)
 
+// Resetear passwords
+router.get('/reestablecer-password', formReestablecerPassword)
+router.post('/reestablecer-password', enviarToken)
+
+// Cerrar sesion
+router.get('/cerrar-sesion', verificarUsuario, cerrarSesion)
+
 // Panel de admin
 router.get('/admin', verificarUsuario, mostrarPanel)
+
+// Editar Perfil
+router.get('/editar-perfil', verificarUsuario, formEditarPerfil)
+router.post('/editar-perfil', verificarUsuario, validarPerfil, 
+    subirImagen, editarPerfil)
+
+
+// Recibir mensajes de candidatos
+router.post('/vacantes/:url', subirCV, contactar)
+
+// Muestra candidatos por vacantes
+router.get('/candidatos/:id', verificarUsuario, mostrarCandidatos)
 
 export default router;

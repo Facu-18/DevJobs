@@ -48,6 +48,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cookieParser());
 
+// Habilitar csrf
+app.use(csrf({cookie: true}))
+
+app.use((req, res, next) => {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use(session({
     secret: process.env.SECRETO,
     key: process.env.KEY,
@@ -70,14 +78,6 @@ app.use(flash());
 // middleware
 app.use((req, res, next)=>{
   res.locals.mensajes = req.flash();
-  next();
-});
-
-// Habilitar csrf
-app.use( csrf({cookie: true}) )
-
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
