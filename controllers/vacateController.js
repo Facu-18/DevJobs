@@ -105,34 +105,37 @@ const formEditarVacante = async (req, res, next) => {
 }
 
 const editarVacante = async (req, res, next) => {
-    // Validando con Express-validator
-    await check('titulo').notEmpty().withMessage('El campo título es obligatorio').trim().escape().run(req);
-    await check('empresa').notEmpty().withMessage('El campo empresa es obligatorio').trim().escape().run(req);
-    await check('ubicacion').notEmpty().withMessage('El campo ubicación es obligatorio').trim().escape().run(req);
-    await check('salario').notEmpty().withMessage('El campo salario es obligatorio').trim().escape().run(req);
-    await check('contrato').notEmpty().withMessage('El campo contrato es obligatorio').trim().escape().run(req);
-
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.render('editar-vacante', {
-            errores: errors.array(),
-            vacante: req.body,
-            csrfToken: req.csrfToken()
-        });
-    }
-
-    // Preparar los datos actualizados de la vacante
-    const vacanteActualizada = req.body;
-    vacanteActualizada.skills = req.body.skills.split(',');
-
     try {
-        // Encontrar la vacante por su URL y actualizarla
+        // Encontrar la vacante por su URL
         const vacante = await Vacante.findOne({ url: req.params.url });
 
         if (!vacante) {
             return next(); // Si no se encuentra la vacante
         }
+
+        // Verificar si el usuario es el autor de la vacante
+        const esAutor = verificarAutor(vacante, req.user);
+
+        // Validando con Express-validator
+        await check('titulo').notEmpty().withMessage('El campo título es obligatorio').trim().escape().run(req);
+        await check('empresa').notEmpty().withMessage('El campo empresa es obligatorio').trim().escape().run(req);
+        await check('ubicacion').notEmpty().withMessage('El campo ubicación es obligatorio').trim().escape().run(req);
+        await check('salario').notEmpty().withMessage('El campo salario es obligatorio').trim().escape().run(req);
+        await check('contrato').notEmpty().withMessage('El campo contrato es obligatorio').trim().escape().run(req);
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.render('editar-vacante', {
+                errores: errors.array(),
+                vacante: req.body,
+                csrfToken: req.csrfToken()
+            });
+        }
+
+        // Preparar los datos actualizados de la vacante
+        const vacanteActualizada = req.body;
+        vacanteActualizada.skills = req.body.skills.split(',');
 
         // Actualizar los campos de la vacante
         vacante.titulo = vacanteActualizada.titulo;
@@ -284,6 +287,23 @@ const mostrarCandidatos = async (req,res,next)=>{
     })
     
 }
+
+const buscarVacantes = async (req,res)=>{
+    const vacantes = await Vacante.find({
+        $text: {
+            $search: req.body.q
+        }
+    });
+
+    // mostrar las vacantes
+    res.render('home',{
+        nombrePagina: `Resultados de la busqueda : ${req.body.q}`,
+        barra: true,
+        vacantes,
+        csrfToken: req.csrfToken()
+    })
+}
+
 export {
     formularioNuevaVacante,
     agregarVacante,
@@ -293,5 +313,6 @@ export {
     eliminarVacante,
     subirCV,
     contactar,
-    mostrarCandidatos
+    mostrarCandidatos,
+    buscarVacantes
 }

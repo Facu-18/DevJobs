@@ -15,6 +15,8 @@ import {seleccionarSkills} from './helpers/handlebars.js'
 import flash from 'connect-flash'
 import { body, validationResult } from 'express-validator';
 import passport from './config/passport.js';
+import createHttpError from 'http-errors';
+import { error } from 'console';
 
 dotenv.config({path: '.env'});
 
@@ -82,5 +84,20 @@ app.use((req, res, next)=>{
 });
 
 app.use('/', appRoutes);
+
+// 404 pagina no existe
+app.use((req,res,next)=>{
+  next(createHttpError(404, 'NOT FOUND'))
+})
+
+// admin errores
+app.use((error, req, res, next)=>{
+  res.locals.mensaje = error.message;
+  const status = error.status || 500;
+  res.locals.status = status;
+  res.status(status)
+  
+  res.render('error')
+})
 
 app.listen(process.env.PORT);
